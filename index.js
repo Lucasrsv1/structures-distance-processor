@@ -18,7 +18,8 @@ const MAXIMUM_PER_MACHINE = 20;
 const RUN_INTERVAL = process.env.RUN_INTERVAL || 5000;
 const REVIVAL_TIMEOUT = process.env.WORKER_REVIVAL_TIMEOUT || 3000;
 
-const QTY_CPUS = Math.min(MAXIMUM_PER_MACHINE, Math.max(1, process.env.QTY_CPUS || os.availableParallelism()));
+const availableParallelism = os.availableParallelism ? os.availableParallelism() : os.cpus().length;
+const QTY_CPUS = Math.min(MAXIMUM_PER_MACHINE, Math.max(1, process.env.QTY_CPUS || availableParallelism));
 
 /**
  * @type {Array<{ child: ChildProcess, isBusy: boolean, isReady: boolean, id: number }>}
