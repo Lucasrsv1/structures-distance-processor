@@ -13,10 +13,16 @@ async function getNextStructures (qty_cpus) {
 	console.log("Getting next structures...");
 	const start = Date.now();
 
+	let url = `${NEXT_STRUCTURE_URL}/${qty_cpus}`;
+	if (process.env.PDB_ONLY === "true")
+		url += "/pdb";
+	else if (process.env.CIF_ONLY === "true")
+		url += "/cif";
+
 	try {
 		const response = await axios({
 			method: "get",
-			url: `${NEXT_STRUCTURE_URL}/${qty_cpus}`,
+			url,
 			timeout: 60000
 		});
 

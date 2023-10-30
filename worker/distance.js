@@ -21,6 +21,7 @@ function calculateDistance (atomA, atomB) {
  */
 function calculateMinDistance (coordinates, from, to) {
 	let min = Infinity;
+	console.log("Calculating minimum distance between atoms", from, "and", to);
 	for (let i = from; i <= to; i++) {
 		let altPosFlag = true;
 		for (let j = i + 1; j < coordinates.length; j++) {

@@ -1,4 +1,4 @@
 node_modules
-worker/downloaded-files/*
+downloaded-files/*
 
 !.gitkeep
