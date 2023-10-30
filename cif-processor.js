@@ -51,23 +51,38 @@ async function run () {
 	run();
 }
 
+function gaussSum (n) {
+	return (n * (n + 1)) / 2;
+}
+
+function divideStructure (qtyAtoms) {
+	const result = [];
+
+	let remaining = qtyAtoms - 1;
+	for (let i = 0; i < CHILDREN.length && remaining > 0; i++) {
+		const end = Math.floor((-1 + Math.sqrt(1 - (4 * 1 * - 2 * (gaussSum(remaining) - (gaussSum(remaining) / (CHILDREN.length - i)))))) / 2 * 1);
+		result.push({
+			start: (qtyAtoms - 1) - remaining,
+			end: (qtyAtoms - 1) - end - 1
+		});
+
+		remaining = end;
+	}
+
+	return result;
+}
+
 function processModel () {
-	// TODO: dividir tarefa baseado em comparações e não em quantidade de átomos
+	// Divide a tarefa baseado na quantidade de comparações e não na quantidade de átomos
 	const modelCoordinates = currentResults.coordinates[currentResults.nextModel];
-	const step = Math.max(1, Math.round(modelCoordinates.length / CHILDREN.length));
+	const modelDivision = divideStructure(modelCoordinates.length);
 
 	currentResults.nextModel++;
-	currentResults.pending = CHILDREN.length;
+	currentResults.pending = modelDivision.length;
 
-	for (let i = 0; i < CHILDREN.length; i++) {
-		const start = step * i;
-		if (start > modelCoordinates.length - 2) {
-			// Nada mais para ser processado
-			currentResults.pending--;
-			break;
-		}
-
-		const end = Math.min(modelCoordinates.length - 1, start + step - 1);
+	for (let i = 0; i < modelDivision.length; i++) {
+		const start = modelDivision[i].start;
+		const end = modelDivision[i].end;
 
 		CHILDREN[i].child.send({ filename: currentResults.filename, start, end, coordinates: modelCoordinates });
 		CHILDREN[i].isBusy = true;
