@@ -110,8 +110,10 @@ function onMessageFromWorker (child, message) {
 
 		if (currentResults.pending <= 0) {
 			if (currentResults.nextModel >= currentResults.coordinates.length) {
-				console.log(`[${currentResults.filename} - CHUNK] The min distance is ${resultFormat(currentResults.min)} and was calculated in ${timeFormat(Date.now() - currentResults.start)}.`);
-				sendDistanceResult(currentResults.min, currentResults.filename);
+				const processingTime = Date.now() - currentResults.start;
+
+				console.log(`[${currentResults.filename}] The min distance is ${resultFormat(currentResults.min)} and was calculated in ${timeFormat(Date.now() - currentResults.start)}.`);
+				sendDistanceResult(currentResults.min, processingTime, currentResults.filename);
 				currentResults.done = true;
 			} else {
 				processModel();

@@ -33,7 +33,7 @@ function onMessageFromWorker (child, message) {
 
 	childRef.isBusy = false;
 	if (!message.failure) {
-		sendDistanceResult(message.result, message.filename);
+		sendDistanceResult(message.result, message.processingTime, message.filename);
 		console.log("Got results from child ID", message.childId);
 	} else {
 		console.error("Got failure from child ID", message.childId);

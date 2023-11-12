@@ -22,10 +22,11 @@ async function processStructure (filename) {
 			minDistance = Math.min(minDistance, calculateMinDistance(modelCoordinates, 0, modelCoordinates.length));
 
 		// Envia resultado para o processo pai
-		_sendResponse(filename, true, minDistance);
+		const processingTime = Date.now() - start;
+		_sendResponse(filename, true, minDistance, processingTime);
 
 		console.log(`[${filename}] The min distance is ${resultFormat(minDistance)} and was calculated in ${timeFormat(Date.now() - calculationStart)}.`);
-		console.log(`[${filename}] Finished processing structure in ${timeFormat(Date.now() - start)}.`);
+		console.log(`[${filename}] Finished processing structure in ${timeFormat(processingTime)}.`);
 	} catch (error) {
 		console.error(`[${filename}] Error processing structure:`, error);
 		_sendResponse(filename, false);
@@ -37,15 +38,17 @@ async function processStructure (filename) {
  * @param {string} structure Nome do arquivo comprimido da estrutura
  * @param {boolean} isSuccess Flag que informa se a estrutura foi processada com sucesso ou não
  * @param {number} minDistance Resultado da menor distância entre os átomos da estrutura
+ * @param {number} processingTime Tempo de execução do processamento da estrutura
  */
-function _sendResponse (structure, isSuccess, minDistance = null) {
+function _sendResponse (structure, isSuccess, minDistance = null, processingTime = null) {
 	deleteStructureFiles(structure);
 	process.send({
 		finished: true,
 		childId: process.env.CHILD_ID,
 		failure: !isSuccess,
 		result: minDistance,
-		filename: structure
+		filename: structure,
+		processingTime
 	});
 }
 

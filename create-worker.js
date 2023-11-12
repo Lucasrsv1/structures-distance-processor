@@ -32,9 +32,6 @@ function createWorker (childProcesses, messagesHandler, qty = 1, startingId = 1)
 		});
 
 		child.on("message", message => {
-			if (!message.finished && !message.started)
-				return console.info("Received message:", message);
-
 			messagesHandler(child, message);
 		});
 

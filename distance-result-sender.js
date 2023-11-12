@@ -8,10 +8,11 @@ const RESULT_URL = `${process.env.MANAGER_URL}/structures/result`;
 /**
  * Envia para o servidor o resultado com a menor distância encontrada
  * @param {number} result Menor distância encontrada
+ * @param {number} processingTime Tempo de execução do processamento da estrutura
  * @param {string} filename Nome da estrutura processada
  * @returns {Promise<void>}
  */
-async function sendDistanceResult (result, filename) {
+async function sendDistanceResult (result, processingTime, filename) {
 	const start = Date.now();
 	console.log(`[${filename}] Sending result to server: ${resultFormat(result)}`);
 
@@ -19,7 +20,7 @@ async function sendDistanceResult (result, filename) {
 		const response = await axios({
 			method: "post",
 			url: RESULT_URL,
-			data: { filename, result },
+			data: { filename, result, processingTime },
 			timeout: 60000
 		});
 
