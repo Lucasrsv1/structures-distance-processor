@@ -83,7 +83,7 @@ function _loadStructureCoordinates (structure) {
 					));
 				}
 
-				stdout = models[models.length - 1].trim();
+				stdout = models[models.length - 1];
 			}
 		});
 
