@@ -7,7 +7,13 @@ require("console-stamp")(console, { format: ":date(yyyy-mm-dd HH:MM:ss.l).yellow
 const cifProcessor = require("./cif-processor");
 const genericProcessor = require("./generic-processor");
 
-if (process.env.CIF_ONLY === "true")
-	cifProcessor.start();
-else
-	genericProcessor.start();
+const { registerProcessor } = require("./register-processor");
+
+(async () => {
+	await registerProcessor();
+
+	if (process.env.CIF_ONLY === "true")
+		cifProcessor.start();
+	else
+		genericProcessor.start();
+})();

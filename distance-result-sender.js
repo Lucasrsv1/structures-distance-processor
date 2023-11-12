@@ -21,7 +21,10 @@ async function sendDistanceResult (result, processingTime, filename) {
 			method: "post",
 			url: RESULT_URL,
 			data: { filename, result, processingTime },
-			timeout: 60000
+			timeout: 60000,
+			headers: {
+				"x-access-token": global.accessToken
+			}
 		});
 
 		if (response.status === 201 && response.data.success) {

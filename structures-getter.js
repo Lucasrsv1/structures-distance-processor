@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 const { timeFormat } = require("./utils");
+const { registerProcessor } = require("./register-processor");
 
 const NEXT_STRUCTURE_URL = `${process.env.MANAGER_URL}/structures/next`;
 
@@ -23,7 +24,10 @@ async function getNextStructures (qty_cpus) {
 		const response = await axios({
 			method: "get",
 			url,
-			timeout: 60000
+			timeout: 60000,
+			headers: {
+				"x-access-token": global.accessToken
+			}
 		});
 
 		if (response.status === 204)
@@ -36,7 +40,13 @@ async function getNextStructures (qty_cpus) {
 		console.log(`Got structures from manager in ${timeFormat(Date.now() - start)}.`);
 		return filenames;
 	} catch (error) {
-		console.error("Couldn't get next structure from manager:", error);
+		if (error && error.response && error.response.status === 403) {
+			console.warn("Couldn't get next structures from manager because this processor is not registered.");
+			registerProcessor();
+		} else {
+			console.error("Couldn't get next structures from manager:", error);
+		}
+
 		return [];
 	}
 }
