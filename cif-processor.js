@@ -103,25 +103,33 @@ function onMessageFromWorker (child, message) {
 	}
 
 	childRef.isBusy = false;
+	currentResults.pending--;
+
 	if (!message.failure) {
-		currentResults.pending--;
 		currentResults.min = Math.min(currentResults.min, message.result);
 		console.log("Got results from child ID", message.childId);
-
-		if (currentResults.pending <= 0) {
-			if (currentResults.nextModel >= currentResults.coordinates.length) {
-				const processingTime = Date.now() - currentResults.start;
-
-				console.log(`[${currentResults.filename}] The min distance is ${resultFormat(currentResults.min)} and was calculated in ${timeFormat(Date.now() - currentResults.start)}.`);
-				sendDistanceResult(currentResults.min, processingTime, currentResults.filename);
-				currentResults.done = true;
-			} else {
-				processModel();
-			}
-		}
 	} else {
 		console.error("Got failure from child ID", message.childId);
-		// TODO: reagendar execução do processamento da parte da estrutura que deu erro
+		currentResults.failed = true;
+	}
+
+	if (currentResults.pending > 0)
+		return;
+
+	if (currentResults.failed) {
+		console.error(`[${currentResults.filename}] Failed to process structure.`);
+		currentResults.done = true;
+		return;
+	}
+
+	if (currentResults.nextModel >= currentResults.coordinates.length) {
+		const processingTime = Date.now() - currentResults.start;
+
+		console.log(`[${currentResults.filename}] The min distance is ${resultFormat(currentResults.min)} and was calculated in ${timeFormat(Date.now() - currentResults.start)}.`);
+		sendDistanceResult(currentResults.min, processingTime, currentResults.filename);
+		currentResults.done = true;
+	} else {
+		processModel();
 	}
 }
 

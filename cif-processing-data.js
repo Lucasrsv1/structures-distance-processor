@@ -34,6 +34,11 @@ class CIFProcessingData {
 		this.coordinates = null;
 
 		/**
+		 * @type {boolean | null} Indica se ocorreu erro durante o processamento da estrutura
+		 */
+		this.failed = false;
+
+		/**
 		 * @type {boolean | null} Indica se o processamento da estrutura foi finalizado
 		 */
 		this.done = true;
@@ -50,6 +55,7 @@ class CIFProcessingData {
 		this.pending = null;
 		this.nextModel = 0;
 		this.coordinates = null;
+		this.failed = false;
 		this.done = false;
 	}
 
@@ -63,6 +69,7 @@ class CIFProcessingData {
 		this.pending = null;
 		this.nextModel = null;
 		this.coordinates = null;
+		this.failed = false;
 		this.done = true;
 	}
 }
