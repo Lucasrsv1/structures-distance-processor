@@ -31,15 +31,23 @@ async function run () {
 		} else if (currentResults.done) {
 			const filenames = await getNextStructures(1);
 			if (filenames[0]) {
+				global.filenames[filenames[0]] = true;
 				currentResults.initiate(filenames[0]);
 
-				currentResults.coordinates = await loadStructure(filenames[0]);
-				if (currentResults.coordinates) {
-					// Processa as coordenadas obtidas
-					processModel();
-				} else {
+				try {
+					currentResults.coordinates = await loadStructure(filenames[0]);
+					if (currentResults.coordinates) {
+						// Processa as coordenadas obtidas
+						processModel();
+					} else {
+						// Cancela processamento por não ter conseguido obter as coordenadas
+						currentResults.reset();
+						delete global.filenames[filenames[0]];
+					}
+				} catch (error) {
 					// Cancela processamento por não ter conseguido obter as coordenadas
 					currentResults.reset();
+					delete global.filenames[filenames[0]];
 				}
 			}
 		}
@@ -111,6 +119,7 @@ function onMessageFromWorker (child, message) {
 	} else {
 		console.error("Got failure from child ID", message.childId);
 		currentResults.failed = true;
+		delete global.filenames[currentResults.filename];
 	}
 
 	if (currentResults.pending > 0)
@@ -119,6 +128,7 @@ function onMessageFromWorker (child, message) {
 	if (currentResults.failed) {
 		console.error(`[${currentResults.filename}] Failed to process structure.`);
 		currentResults.done = true;
+		delete global.filenames[currentResults.filename];
 		return;
 	}
 
@@ -128,6 +138,7 @@ function onMessageFromWorker (child, message) {
 		console.log(`[${currentResults.filename}] The min distance is ${resultFormat(currentResults.min)} and was calculated in ${timeFormat(Date.now() - currentResults.start)}.`);
 		sendDistanceResult(currentResults.min, processingTime, currentResults.filename);
 		currentResults.done = true;
+		delete global.filenames[currentResults.filename];
 	} else {
 		processModel();
 	}

@@ -32,6 +32,8 @@ function onMessageFromWorker (child, message) {
 	}
 
 	childRef.isBusy = false;
+	delete global.filenames[message.filename];
+
 	if (!message.failure) {
 		sendDistanceResult(message.result, message.processingTime, message.filename);
 		console.log("Got results from child ID", message.childId);
@@ -61,6 +63,7 @@ async function run () {
 
 				freeChild.child.send({ filename: filenames[i] });
 				freeChild.isBusy = true;
+				global.filenames[filenames[i]] = true;
 			}
 		}
 	} catch (error) {
