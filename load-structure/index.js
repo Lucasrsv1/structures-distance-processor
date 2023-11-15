@@ -4,8 +4,8 @@ const path = require("path");
 const { downloadStructure } = require("./download-file");
 const { timeFormat, sizeFormat } = require("../utils");
 
-const SH_TIMEOUT_PDB = process.env.SH_TIMEOUT_PDB || 25000;
-const SH_TIMEOUT_CIF = process.env.SH_TIMEOUT_CIF || 900000;
+const SH_TIMEOUT_MULTI_FILES = process.env.SH_TIMEOUT_MULTI_FILES || 25000;
+const SH_TIMEOUT_SINGLE_FILE = process.env.SH_TIMEOUT_SINGLE_FILE || 900000;
 
 const outputFolder = path.resolve(__dirname, "..", "downloaded-files");
 const extractCoordinatesPDBApp = path.resolve(__dirname, "extract-coordinates-pdb.sh");
@@ -44,7 +44,7 @@ function _loadStructureCoordinates (structure) {
 	return new Promise(resolve => {
 		let coordinates = [];
 		const extractCoordinatesApp = structure.includes(".pdb") ? extractCoordinatesPDBApp : extractCoordinatesCIFApp;
-		const timeout = structure.includes(".pdb")? SH_TIMEOUT_PDB : SH_TIMEOUT_CIF;
+		const timeout = structure.includes(".pdb")? SH_TIMEOUT_MULTI_FILES : SH_TIMEOUT_SINGLE_FILE;
 
 		let stdout = "";
 		let stdoutSize = 0;

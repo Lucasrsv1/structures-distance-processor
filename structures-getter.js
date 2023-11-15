@@ -1,29 +1,25 @@
 const axios = require("axios");
 
-const { timeFormat } = require("./utils");
+const { ProcessingModes } = require("./processing-modes");
 const { registerProcessor } = require("./register-processor");
+const { timeFormat } = require("./utils");
 
 const NEXT_STRUCTURE_URL = `${process.env.MANAGER_URL}/structures/next`;
 
 /**
  * Obtém as próximas estruturas do gerenciador e realiza o seu processamento
  * @param {number} qty_cpus Quantidade de CPUs usadas para processamento paralelo
+ * @param {ProcessingModes} mode Modo de processamento a ser usado
  * @returns {Promise<string[]>} Lista de arquivos com as próximas estruturas
  */
-async function getNextStructures (qty_cpus) {
+async function getNextStructures (qty_cpus, mode) {
 	console.log("Getting next structures...");
 	const start = Date.now();
-
-	let url = `${NEXT_STRUCTURE_URL}/${qty_cpus}`;
-	if (process.env.PDB_ONLY === "true")
-		url += "/pdb";
-	else if (process.env.CIF_ONLY === "true")
-		url += "/cif";
 
 	try {
 		const response = await axios({
 			method: "get",
-			url,
+			url: `${NEXT_STRUCTURE_URL}/${qty_cpus}/${mode}`,
 			timeout: 60000,
 			headers: {
 				"x-access-token": global.accessToken

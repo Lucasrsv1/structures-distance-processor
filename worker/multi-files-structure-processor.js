@@ -8,7 +8,7 @@ const { resultFormat, timeFormat } = require("../utils");
  * @param {string} filename Nome do arquivo comprimido da estrutura
  * @returns {Promise<void>}
  */
-async function processStructure (filename) {
+async function processMultiFileStructure (filename) {
 	const start = Date.now();
 
 	try {
@@ -45,6 +45,7 @@ function _sendResponse (structure, isSuccess, minDistance = null, processingTime
 	process.send({
 		finished: true,
 		childId: process.env.CHILD_ID,
+		multiFilesMode: true,
 		failure: !isSuccess,
 		result: minDistance,
 		filename: structure,
@@ -52,4 +53,4 @@ function _sendResponse (structure, isSuccess, minDistance = null, processingTime
 	});
 }
 
-module.exports = { processStructure };
+module.exports = { processMultiFileStructure };

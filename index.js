@@ -2,15 +2,20 @@
 require("dotenv").config();
 
 // Configura estampa de tempo dos logs
-require("console-stamp")(console, { format: ":date(yyyy-mm-dd HH:MM:ss.l).yellow :label" });
+require("console-stamp")(console, {
+	format: ":date(yyyy-mm-dd HH:MM:ss.l).yellow :mode.magenta :label",
+	tokens: {
+		mode () { return `[${global.runningMode}]`; }
+	}
+});
 
-const cifProcessor = require("./cif-processor");
-const genericProcessor = require("./generic-processor");
-
+const { ProcessingModes } = require("./processing-modes");
 const { registerProcessor } = require("./register-processor");
 const { sendPing } = require("./send-ping");
+const { start } = require("./processor");
 
 (async () => {
+	global.runningMode = ProcessingModes.MULTI_FILES;
 	await registerProcessor();
 
 	// Envia de minuto em minuto o ping para o servidor informando que o processador continua em execução
@@ -18,7 +23,9 @@ const { sendPing } = require("./send-ping");
 	setInterval(sendPing, 60000);
 
 	if (process.env.CIF_ONLY === "true")
-		cifProcessor.start();
+		global.runningMode = ProcessingModes.SINGLE_FILE;
 	else
-		genericProcessor.start();
+		global.runningMode = ProcessingModes.MULTI_FILES;
+
+	start();
 })();

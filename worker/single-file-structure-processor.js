@@ -6,7 +6,7 @@ const { calculateMinDistance } = require("./distance");
  * @param {string} filename Nome do arquivo comprimido da estrutura
  * @returns {Promise<void>}
  */
-async function processCIFStructure (filename, modelCoordinates, start, end) {
+async function processSingleFileStructure (filename, modelCoordinates, start, end) {
 	try {
 		const calculationStart = Date.now();
 		const minDistance = calculateMinDistance(modelCoordinates, start, end);
@@ -31,6 +31,7 @@ function _sendResponse (structure, isSuccess, minDistance = null, start = null, 
 	process.send({
 		finished: true,
 		childId: process.env.CHILD_ID,
+		singleFileMode: true,
 		failure: !isSuccess,
 		result: minDistance,
 		filename: structure,
@@ -39,4 +40,4 @@ function _sendResponse (structure, isSuccess, minDistance = null, start = null, 
 	});
 }
 
-module.exports = { processCIFStructure };
+module.exports = { processSingleFileStructure };

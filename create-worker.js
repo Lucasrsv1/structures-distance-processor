@@ -19,12 +19,6 @@ function createWorker (childProcesses, messagesHandler, qty = 1, startingId = 1)
 		const childEnv = process.env;
 		childEnv.CHILD_ID = id;
 
-		if (process.env.PDB_ONLY === "true")
-			childEnv.PDB_MODE = true;
-
-		if (process.env.CIF_ONLY === "true")
-			childEnv.CIF_MODE = true;
-
 		const child = fork(workerPath, {
 			cwd: __dirname,
 			detached: false,
@@ -45,7 +39,7 @@ function createWorker (childProcesses, messagesHandler, qty = 1, startingId = 1)
 			setTimeout(createWorker, REVIVAL_TIMEOUT, childProcesses, messagesHandler, 1, childId);
 		});
 
-		childProcesses.push({ child, isBusy: false, isReady: false, id });
+		childProcesses.push({ child, isBusy: false, isReady: false, singleFileLock: false, id });
 	}
 }
 

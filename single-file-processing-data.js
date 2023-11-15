@@ -1,7 +1,7 @@
 /**
- * Dados de controle do processamento de estruturas
+ * Dados de controle do processamento de uma estrutura
  */
-class CIFProcessingData {
+class SingleFileProcessingData {
 	constructor () {
 		/**
 		 * @type {string | null} Nome do arquivo comprimido da estrutura
@@ -60,7 +60,7 @@ class CIFProcessingData {
 	}
 
 	/**
-	 * Reinicia os dados de controle do processamento de estruturas
+	 * Reinicia os dados de controle do processamento de uma estrutura
 	 */
 	reset () {
 		this.filename = null;
@@ -74,4 +74,4 @@ class CIFProcessingData {
 	}
 }
 
-module.exports = { CIFProcessingData };
+module.exports = { SingleFileProcessingData };
