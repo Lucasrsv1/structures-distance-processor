@@ -1,6 +1,6 @@
 {
 	"name": "structures-distance-processor",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "Processador de estruturas de proteínas capaz de identificar a menor distância entre dois átomos",
 	"main": "index.js",
 	"scripts": {
