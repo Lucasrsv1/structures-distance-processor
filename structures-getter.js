@@ -26,16 +26,15 @@ async function getNextStructures (qty, mode) {
 			}
 		});
 
-		if (response.status === 204)
-			return console.error("Manager has no more structures to process at the moment.");
-
 		const { filenames, processingMode } = response.data;
 
 		if (processingMode === ProcessingModes.SINGLE_FILE || processingMode === ProcessingModes.MULTI_FILES)
 			global.runningMode = processingMode;
 
-		if (!filenames)
-			return console.error("No files returned by manager:", response.data);
+		if (!filenames || !filenames.length) {
+			console.info("Manager has no more structures to process at the moment.");
+			return [];
+		}
 
 		console.log(`Got structures from manager in ${timeFormat(Date.now() - start)}.`);
 		return filenames;
