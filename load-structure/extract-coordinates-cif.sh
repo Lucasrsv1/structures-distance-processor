@@ -29,13 +29,20 @@ echo "EXTRACTED COORDINATES"
 awk -v x_col="$x_col" -v y_col="$y_col" -v z_col="$z_col" -v model_col="$model_col" -v alt_pos_col="$alt_pos_col" '
 	$1 ~ /^(ATOM|HETATM)/ {
 		if (prev != $model_col) {
+			original_pos_marker = "";
 			print "MODEL";
 		}
 
-		if ($alt_pos_col == "A" || $alt_pos_col == " " || $alt_pos_col == ".") {
+		if ($alt_pos_col == " " || $alt_pos_col == ".") {
 			alt_pos = 0;
+			original_pos_marker = "";
 		} else {
-			alt_pos = 1;
+			if (original_pos_marker != "" && original_pos_marker != $alt_pos_col) {
+				alt_pos = 1;
+			} else {
+				alt_pos = 0;
+				original_pos_marker = $alt_pos_col;
+			}
 		}
 
 		print $x_col, $y_col, $z_col, alt_pos;
