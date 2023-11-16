@@ -30,13 +30,17 @@ function createWorker (childProcesses, messagesHandler, qty = 1, startingId = 1)
 		});
 
 		child.on("exit", code => {
-			const childIdx = childProcesses.findIndex(c => c.child === child);
-			const childId = childProcesses[childIdx].id;
+			try {
+				const childIdx = childProcesses.findIndex(c => c.child === child);
+				const childId = childProcesses[childIdx] ? childProcesses[childIdx].id : 0;
 
-			childProcesses.splice(childIdx, 1);
-			if (code === 0 || child.needToDie) return;
+				childProcesses.splice(childIdx, 1);
+				if (code === 0 || child.needToDie) return;
 
-			setTimeout(createWorker, REVIVAL_TIMEOUT, childProcesses, messagesHandler, 1, childId);
+				setTimeout(createWorker, REVIVAL_TIMEOUT, childProcesses, messagesHandler, 1, childId);
+			} catch (error) {
+				console.error("Error managing workers:", error);
+			}
 		});
 
 		childProcesses.push({ child, isBusy: false, isReady: false, singleFileLock: false, id });

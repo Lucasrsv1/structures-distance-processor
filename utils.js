@@ -3,6 +3,8 @@ const chalk = require("chalk");
 const path = require("path");
 const { ChildProcess } = require("child_process");
 
+const { unregisterProcessor } = require("./register-processor");
+
 const outputFolder = path.resolve(__dirname, "downloaded-files");
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
@@ -43,7 +45,9 @@ function handleProcessExit (childProcesses) {
 
 	// Registra eventos de tratamento do término inesperado da aplicação para matar todos os processos filhos
 	for (const sig of terminationSignals) {
-		process.on(sig, () => {
+		process.on(sig, async () => {
+			const lastWill = unregisterProcessor();
+
 			console.log("Killing the children.");
 			for (const { child } of childProcesses) {
 				child.needToDie = true;
@@ -51,6 +55,8 @@ function handleProcessExit (childProcesses) {
 			}
 
 			childProcesses.splice(0);
+
+			await lastWill;
 			process.exit(1);
 		});
 	}

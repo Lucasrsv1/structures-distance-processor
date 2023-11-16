@@ -2,7 +2,8 @@ const axios = require("axios");
 const chalk = require("chalk");
 const { ProcessingModes } = require("./processing-modes");
 
-const NAMING_URL = `${process.env.MANAGER_URL}/processors/register`;
+const NAMING_REGISTER_URL = `${process.env.MANAGER_URL}/processors/register`;
+const NAMING_UNREGISTER_URL = `${process.env.MANAGER_URL}/processors/unregister`;
 
 /**
  * Registra este processador no gerenciador de estruturas para poder acessá-lo
@@ -14,7 +15,7 @@ async function registerProcessor () {
 	try {
 		const response = await axios({
 			method: "post",
-			url: NAMING_URL,
+			url: NAMING_REGISTER_URL,
 			data: { qtyCPUs: global.QTY_CPUS },
 			timeout: 60000
 		});
@@ -36,4 +37,30 @@ async function registerProcessor () {
 	}
 }
 
-module.exports = { registerProcessor };
+/**
+ * Remove este processador do gerenciador de estruturas
+ * @returns {Promise<void>}
+ */
+async function unregisterProcessor () {
+	console.log("Removing this processor...");
+
+	try {
+		const response = await axios({
+			method: "delete",
+			url: NAMING_UNREGISTER_URL,
+			timeout: 60000,
+			headers: {
+				"x-access-token": global.accessToken
+			}
+		});
+
+		if (response.status !== 200 || !response.data || !response.data.success)
+			return console.error("Couldn't unregister this processor:", response.data);
+
+		console.log(chalk.bold(chalk.red("This processor has been unregistered from server.")));
+	} catch (error) {
+		console.error("Couldn't unregister this processor:", error);
+	}
+}
+
+module.exports = { registerProcessor, unregisterProcessor };
