@@ -1,5 +1,3 @@
-const os = require("os");
-
 const { createWorker } = require("./create-worker");
 const multiFilesProcessor = require("./multi-files-processor");
 const singleFileProcessor = require("./single-file-processor");
@@ -8,9 +6,6 @@ const { sleep, removePreviousFiles, handleProcessExit } = require("./utils");
 const { ProcessingModes } = require("./processing-modes");
 
 const RUN_INTERVAL = process.env.RUN_INTERVAL || 5000;
-
-const availableParallelism = os.availableParallelism ? os.availableParallelism() : os.cpus().length;
-const QTY_CPUS = Math.max(1, process.env.QTY_CPUS || availableParallelism);
 
 /**
  * @type {Array<{ child: ChildProcess, isBusy: boolean, isReady: boolean, id: number }>}
@@ -54,7 +49,7 @@ async function start () {
 	handleProcessExit(CHILDREN);
 
 	removePreviousFiles();
-	createWorker(CHILDREN, onMessageFromWorker, QTY_CPUS);
+	createWorker(CHILDREN, onMessageFromWorker, global.QTY_CPUS);
 
 	// Aguarda todos os processos filhos estarem prontos
 	while (CHILDREN.some(c => !c.isReady))

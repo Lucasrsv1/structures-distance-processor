@@ -9,10 +9,15 @@ require("console-stamp")(console, {
 	}
 });
 
+const os = require("os");
+
 const { ProcessingModes } = require("./processing-modes");
 const { registerProcessor } = require("./register-processor");
 const { sendPing } = require("./send-ping");
 const { start } = require("./processor");
+
+const availableParallelism = os.availableParallelism ? os.availableParallelism() : os.cpus().length;
+global.QTY_CPUS = Math.max(1, process.env.QTY_CPUS || availableParallelism);
 
 (async () => {
 	global.runningMode = ProcessingModes.MULTI_FILES;
@@ -21,11 +26,6 @@ const { start } = require("./processor");
 	// Envia de minuto em minuto o ping para o servidor informando que o processador continua em execução
 	global.filenames = {};
 	setInterval(sendPing, 60000);
-
-	if (process.env.CIF_ONLY === "true")
-		global.runningMode = ProcessingModes.SINGLE_FILE;
-	else
-		global.runningMode = ProcessingModes.MULTI_FILES;
 
 	start();
 })();

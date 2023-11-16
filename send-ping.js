@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { ProcessingModes } = require("./processing-modes");
 
 const NAMING_URL = `${process.env.MANAGER_URL}/structures/ping`;
 
@@ -28,6 +29,9 @@ async function sendPing () {
 
 		if (response.status !== 202)
 			return console.error("Couldn't send ping to server:", response.data);
+
+		if (response.data.processingMode === ProcessingModes.SINGLE_FILE || response.data.processingMode === ProcessingModes.MULTI_FILES)
+			global.runningMode = response.data.processingMode;
 
 		console.log("Ping sent to server");
 	} catch (error) {

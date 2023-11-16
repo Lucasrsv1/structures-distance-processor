@@ -2,6 +2,7 @@ const axios = require("axios");
 const chalk = require("chalk");
 
 const { resultFormat, timeFormat } = require("./utils");
+const { ProcessingModes } = require("./processing-modes");
 
 const RESULT_URL = `${process.env.MANAGER_URL}/structures/result`;
 
@@ -27,12 +28,19 @@ async function sendDistanceResult (result, processingTime, filename) {
 			}
 		});
 
-		if (response.status === 201 && response.data.success) {
-			if (response.data.isNewMinDistance)
-				console.log(chalk.bold(chalk.green(`[${filename}] Current global minimum distance set to ${result}!`)));
+		if (response.status === 201) {
+			const { success, isNewMinDistance, processingMode } = response.data;
 
-			console.log(`[${filename}] Result sent to server in ${timeFormat(Date.now() - start)}.`);
-			return;
+			if (processingMode === ProcessingModes.SINGLE_FILE || processingMode === ProcessingModes.MULTI_FILES)
+				global.runningMode = processingMode;
+
+			if (success) {
+				if (isNewMinDistance)
+					console.log(chalk.bold(chalk.green(`[${filename}] Current global minimum distance set to ${result}!`)));
+
+				console.log(`[${filename}] Result sent to server in ${timeFormat(Date.now() - start)}.`);
+				return;
+			}
 		}
 
 		console.error(`[${filename}] Got status ${response.status} from server, and the following response:`, response.data);
