@@ -20,11 +20,15 @@ function removePreviousFiles () {
 	console.log("Deleting previous files...");
 	const start = Date.now();
 
-	if (fs.existsSync(outputFolder))
-		fs.rmSync(outputFolder, { force: true, recursive: true });
+	try {
+		if (fs.existsSync(outputFolder))
+			fs.rmSync(outputFolder, { force: true, recursive: true });
 
-	fs.mkdirSync(outputFolder);
-	console.log(`Previous files deleted in ${timeFormat(Date.now() - start)}.`);
+		fs.mkdirSync(outputFolder);
+		console.log(`Previous files deleted in ${timeFormat(Date.now() - start)}.`);
+	} catch (error) {
+		console.error("Couldn't delete previous files:", error);
+	}
 }
 
 /**
