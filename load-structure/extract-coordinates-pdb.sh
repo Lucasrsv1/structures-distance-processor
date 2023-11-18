@@ -19,7 +19,7 @@ awk '
 
 		alt_pos_char = substr($0, 17, 1);
 
-		if (alt_pos == " " || alt_pos == ".") {
+		if (alt_pos_char == " " || alt_pos_char == ".") {
 			alt_pos = 0;
 			original_pos_marker = "";
 		} else {
