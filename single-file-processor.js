@@ -4,6 +4,7 @@ const { sendDistanceResult } = require("./distance-result-sender");
 
 const { resultFormat, timeFormat } = require("./utils");
 
+const { deleteStructureFiles } = require("./load-structure/download-file");
 const { ProcessingModes } = require("./processing-modes");
 const { SingleFileProcessingData } = require("./single-file-processing-data");
 
@@ -29,6 +30,7 @@ function onMessageFromWorker (CHILDREN, message) {
 
 		_currentResults.done = true;
 		delete global.filenames[_currentResults.filename];
+		deleteStructureFiles(_currentResults.filename);
 
 		// Libera os filhos pois não foi possível processar a estrutura
 		for (const child of CHILDREN)
@@ -45,6 +47,7 @@ function onMessageFromWorker (CHILDREN, message) {
 
 		_currentResults.done = true;
 		delete global.filenames[_currentResults.filename];
+		deleteStructureFiles(_currentResults.filename);
 
 		// Libera os filhos pois acabou o processamento da estrutura
 		for (const child of CHILDREN)
