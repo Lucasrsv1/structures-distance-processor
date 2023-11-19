@@ -36,6 +36,8 @@ async function run (CHILDREN) {
 
 				freeChild.child.send({ filename: filenames[i], multiFilesMode: true });
 				freeChild.isBusy = true;
+				freeChild.filename = filenames[i];
+				freeChild.processingMode = ProcessingModes.MULTI_FILES;
 				global.filenames[filenames[i]] = true;
 			}
 		}

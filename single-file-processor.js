@@ -1,3 +1,5 @@
+const { ChildProcess } = require("child_process");
+
 const { getNextStructures } = require("./structures-getter");
 const { loadStructure } = require("./load-structure");
 const { sendDistanceResult } = require("./distance-result-sender");
@@ -10,6 +12,10 @@ const { SingleFileProcessingData } = require("./single-file-processing-data");
 
 const _currentResults = new SingleFileProcessingData();
 
+/**
+ * @param {Array<{ child: ChildProcess, isBusy: boolean, isReady: boolean, id: number, filename: string, processingMode: ProcessingModes }>} CHILDREN
+ * @param {Object} message
+ */
 function onMessageFromWorker (CHILDREN, message) {
 	_currentResults.pending--;
 
@@ -20,6 +26,12 @@ function onMessageFromWorker (CHILDREN, message) {
 		console.error("Got failure from child ID", message.childId);
 		_currentResults.failed = true;
 		delete global.filenames[_currentResults.filename];
+
+		const busyChildren = CHILDREN.filter(c => c.isBusy);
+		for (const c of busyChildren) {
+			c.child.kill("SIGKILL");
+			c.isBusy = false;
+		}
 	}
 
 	if (_currentResults.pending > 0)
@@ -142,6 +154,8 @@ function _processModel (CHILDREN) {
 			end
 		});
 		CHILDREN[i].isBusy = true;
+		CHILDREN[i].filename = _currentResults.filename;
+		CHILDREN[i].processingMode = ProcessingModes.SINGLE_FILE;
 	}
 }
 

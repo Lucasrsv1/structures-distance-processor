@@ -1,3 +1,5 @@
+const { ChildProcess } = require("child_process");
+
 const { createWorker } = require("./create-worker");
 const multiFilesProcessor = require("./multi-files-processor");
 const singleFileProcessor = require("./single-file-processor");
@@ -8,7 +10,7 @@ const { ProcessingModes } = require("./processing-modes");
 const RUN_INTERVAL = process.env.RUN_INTERVAL || 5000;
 
 /**
- * @type {Array<{ child: ChildProcess, isBusy: boolean, isReady: boolean, id: number }>}
+ * @type {Array<{ child: ChildProcess, isBusy: boolean, isReady: boolean, id: number, singleFileLock: boolean, filename: string, processingMode: ProcessingModes }>}
  */
 const CHILDREN = [];
 
